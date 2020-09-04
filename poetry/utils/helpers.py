@@ -10,6 +10,7 @@ from typing import Optional
 import requests
 
 from poetry.config.config import Config
+from poetry.core.packages.package import Package
 from poetry.core.version import Version
 from poetry.utils._compat import Path
 
@@ -100,3 +101,14 @@ def download_file(
             for chunk in response.iter_content(chunk_size=chunk_size):
                 if chunk:
                     f.write(chunk)
+
+
+def get_package_version_display_string(
+    package, root=None
+):  # type: (Package, Optional[Path]) -> str
+    if package.source_type in ["file", "directory"] and root:
+        return "{} {}".format(
+            package.version, os.path.relpath(package.source_url, root.as_posix())
+        )
+
+    return package.full_pretty_version
