@@ -125,3 +125,14 @@ def test_set_cert(app, config_source, auth_config_source, mocker):
     tester.execute("certificates.foo.cert path/to/ca.pem")
 
     assert "path/to/ca.pem" == auth_config_source.config["certificates"]["foo"]["cert"]
+
+
+def test_set_http_password(app, config_source, auth_config_source, mocker):
+    mocker.spy(ConfigSource, "__init__")
+    command = app.find("config")
+    username = "some_username"
+    password = "-some_password"
+    tester = CommandTester(command)
+    tester.execute(f"http-basic.foo {username} {password}")
+    assert username == auth_config_source.config["http-basic"]["foo"]["username"]
+    assert password == auth_config_source.config["http-basic"]["foo"]["password"]
